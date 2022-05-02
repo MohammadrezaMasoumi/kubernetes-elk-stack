@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mongodb-exporter
+  name: mongodb-exporter
+  namespace: graylog
+spec:
+  selector:
+    matchLabels:
+      app: mongodb-exporter
+  template:
+    metadata:
+      labels:
+        app: mongodb-exporter
+    spec:
+      containers:
+      - name: mongodb-exporter
+        image: registry.efarda.ir/mongo/mongo-exporter:latest
+        command:
+          - "/mongodb_exporter"
+          - "--mongodb.uri=mongodb://mongodb-service:27017"
+          - "--discovering-mode"
+        env:
+        - name: TZ
+          value: 'Asia/Tehran'
+
+      tolerations:
+      - key: node.kubernetes.io/not-ready
+        effect: NoExecute
+        tolerationSeconds: 0
+      - key: node.kubernetes.io/unreachable
+        effect: NoExecute
+        tolerationSeconds: 0
+
+      imagePullSecrets:
+        - name: efarda-registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-exporter
+  labels:
+    app: mongodb-exporter
+  namespace: graylog
+spec:
+  selector:
+    app: mongodb-exporter
+  type: ClusterIP
+  ports:
+  - name: exporter
+    port: 9216
+    targetPort: 9216
+    protocol: TCP

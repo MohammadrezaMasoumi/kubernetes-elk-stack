@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: elasticsearch-master
+    env: prod
+  name: elasticsearch-master
+  namespace: graylog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch-master
+  template:
+    metadata:
+      labels:
+        app: elasticsearch-master
+        env: prod
+    spec:
+      containers:
+      - name: elasticsearch-master
+        image: registry.efarda.ir/elasticsearch/elasticsearch:6.8.2
+        env:
+        - name: discovery.zen.ping.unicast.hosts
+          value: elasticsearch-data,elasticsearch-master
+        - name: node.name
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: cluster.name
+          value: graylog
+        - name: node.data
+          value: "false"
+        - name: node.master
+          value: "true"
+        - name: node.ingest
+          value: "false"
+        - name: network.host
+          value: "0.0.0.0"
+        - name: bootstrap.memory_lock
+          value: "false"
+        - name: TZ
+          value: 'Asia/Tehran'
+
+        volumeMounts:
+        - name: storage-master
+          mountPath: /usr/share/elasticsearch/data
+        - name: elasticsearch-master-jvm
+          mountPath: /usr/share/elasticsearch/config/jvm.options
+          subPath: jvm.options
+
+        ports:
+        - containerPort: 9300
+          name: transport
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "3"
+            memory: 8Gi
+
+      initContainers:
+      - name: init-sysctl
+        image: registry.efarda.ir/busybox
+        command: ['sysctl', '-w', 'vm.max_map_count=262144']
+        securityContext:
+          privileged: true
+
+      - name: fix-the-volume-permission
+        image: registry.efarda.ir/busybox
+        command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: storage-master
+            mountPath: /usr/share/elasticsearch/data
+
+      - name: increase-the-ulimit
+        image: registry.efarda.ir/busybox
+        command: ['sh', '-c', 'ulimit -n 65536']
+        securityContext:
+          privileged: true
+
+      volumes:
+      - name: storage-master
+        persistentVolumeClaim:
+          claimName: elasticsearch-master-pvc
+      - name: elasticsearch-master-jvm
+        configMap:
+          name: elasticsearch-master-jvm
+
+      tolerations:
+      - key: node.kubernetes.io/not-ready
+        effect: NoExecute
+        tolerationSeconds: 0
+      - key: node.kubernetes.io/unreachable
+        effect: NoExecute
+        tolerationSeconds: 0
+
+      imagePullSecrets:
+        - name: payrad-repo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: graylog
+  name: elasticsearch-master
+  labels:
+    env: prod
+spec:
+  clusterIP: None
+  selector:
+    app: elasticsearch-master
+  ports:
+  - name: transport
+    port: 9300

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+  namespace: graylog
+  labels:
+    app: kibana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+      - name: kibana
+        image: registry.efarda.ir/elasticsearch/kibana:6.8.2
+        env:
+          - name: ELASTICSEARCH_URL
+            value: http://elasticsearch-ingest:9200
+          - name: TZ
+            value: 'Asia/Tehran'
+
+      imagePullSecrets:
+        - name: payrad-repo
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+  namespace: graylog
+  labels:
+    app: kibana
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 5601
+  selector:
+    app: kibana

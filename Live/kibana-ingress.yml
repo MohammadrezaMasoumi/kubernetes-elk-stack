@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |-
+      more_set_headers 'server: hide';
+      more_set_headers 'X-Frame-Options SAMEORIGIN';
+      more_set_headers 'X-Content-Type-Options nosniff'
+      more_set_headers 'X-XSS-Protection "1; mode=block"';
+      more_set_headers 'Strict-Transport-Security "max-age=31536000; includeSubdomains; preload"';
+  name: kibana-ingress
+  namespace: graylog
+spec:
+  rules:
+  - host: kibana.efarda.ir
+    http:
+      paths:
+      - backend:
+          serviceName: kibana
+          servicePort: 80
+  tls:
+  - hosts:
+    - kibana.efarda.ir

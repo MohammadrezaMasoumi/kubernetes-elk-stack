@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+spec:
+  serviceName: mongodb-service
+  replicas: 3
+  selector:
+    matchLabels:
+      role: mongodb
+      environment: prod
+  template:
+    metadata:
+      labels:
+        role: mongodb
+        environment: prod
+    spec:
+      containers:
+        - name: mongodb
+          image: registry.efarda.ir/mongo:4.2
+          imagePullPolicy: IfNotPresent
+          command:
+            - "mongod"
+            - "--bind_ip"
+            - "0.0.0.0"
+            - "--port"
+            - "27017"
+            - "--replSet"
+            - "graylog"
+          ports:
+            - containerPort: 27017
+          env:
+            - name: TZ
+              value: 'Asia/Tehran'
+          volumeMounts:
+            - name: storage-mongodb
+              mountPath: /data/db
+      imagePullSecrets:
+        - name: efarda-registry
+
+  volumeClaimTemplates:
+  - metadata:
+      name: storage-mongodb
+    spec:
+      storageClassName: manual
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+  labels:
+    name: mongodb
+spec:
+  ports:
+  - port: 27017
+    targetPort: 27017
+  clusterIP: None
+  selector:
+    role: mongodb

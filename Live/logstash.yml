@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash
+  namespace: graylog
+  labels:
+    app: logstash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      containers:
+      - name: logstash
+        image: registry.efarda.ir/elasticsearch/logstash:6.8.2
+        args:
+          - --path.config=/usr/share/logstash/pipeline/logstash.conf
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: logstash-mariadb-pass
+        - name: DB_USERNAME
+          value: 'root'
+        - name: DB_DATABASE
+          value: 'logstash'
+        - name: DB_HOST
+          value: ''
+        - name: TZ
+          value: 'Asia/Tehran'
+
+        volumeMounts:
+          - name: config-volume
+            mountPath: /usr/share/logstash/config
+          - name: logstash-pipeline-volume
+            mountPath: /usr/share/logstash/pipeline
+          - name: logstash-last-run-volume
+            mountPath: /etc/logstash/conf.d/lastrun
+
+      volumes:
+      - name: config-volume
+        configMap:
+          name: logstash-config
+          items:
+            - key: logstash.yml
+              path: logstash.yml
+
+      - name: logstash-pipeline-volume
+        configMap:
+          name: logstash-config
+          items:
+            - key: logstash.conf
+              path: logstash.conf
+
+      - name: logstash-last-run-volume
+        persistentVolumeClaim:
+          claimName: logstash-pvc
+
+      imagePullSecrets:
+        - name: efarda-registry
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: logstash
+  namespace: graylog
+spec:
+  selector:
+    app: logstash
+  ports:
+  - protocol: TCP
+    port: 5044
+    targetPort: 5044

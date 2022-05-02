@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graylog
+  namespace: graylog
+  labels:
+    component: graylog
+    role: master
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      component: graylog
+      role: master
+  template:
+    metadata:
+      labels:
+        component: graylog
+        role: master
+    spec:
+      containers:
+      - name: graylog
+        image: registry.efarda.ir/graylog/graylog:4.0.5-1
+
+        env:
+        - name: "GRAYLOG_ELASTICSEARCH_HOSTS"
+          value: "http://elasticsearch-ingest:9200/"
+        - name: "GRAYLOG_MONGODB_URI"
+          value: "mongodb://mongodb-0.mongodb-service:27017,mongodb-1.mongodb-service:27017,mongodb-2.mongodb-service.graylog:27017/graylog"
+        - name: "GRAYLOG_PASSWORD_SECRET"
+          value: "bgvQilL6Oy09mXTkSVVHE16SammU"
+        - name: "GRAYLOG_ROOT_PASSWORD_SHA2"
+          value: "e18b20662b20acf4eb863f314af9d048c3bb87da07499fe96ca13aa5e62f3cb4"
+        - name: "GRAYLOG_HTTP_EXTERNAL_URI"
+          value: "https://graylog.payrad.org/"
+        - name: "GRAYLOG_ROOT_TIMEZONE"
+          value: "Asia/Tehran"
+        - name: "TZ"
+          value: "Asia/Tehran"
+        volumeMounts:
+        - name: storage-graylog
+          mountPath: /usr/share/graylog/data/journal
+        - name: graylog-plugin
+          mountPath: /usr/share/graylog/plugin
+        - name: graylog-pfsense
+          mountPath: /etc/graylog/server
+
+      initContainers:
+      - name: fix-the-volume-permission
+        image: registry.efarda.ir/busybox
+        command: ['sh', '-c', 'chown -R 1100:1100 /usr/share/graylog/data/journal && chown -R 1100:1100 /usr/share/graylog/plugin']
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: storage-graylog
+            mountPath: /usr/share/graylog/data/journal
+          - name: graylog-plugin
+            mountPath: /usr/share/graylog/plugin
+          - name: graylog-pfsense
+            mountPath: /etc/graylog/server
+
+      volumes:
+      - name: storage-graylog
+        persistentVolumeClaim:
+          claimName: graylog-pvc
+      - name: graylog-plugin
+        persistentVolumeClaim:
+          claimName: graylog-plugin-pvc
+      - name: graylog-pfsense
+        persistentVolumeClaim:
+          claimName: graylog-pfsense-pvc
+
+      tolerations:
+      - key: node.kubernetes.io/not-ready
+        effect: NoExecute
+        tolerationSeconds: 0
+      - key: node.kubernetes.io/unreachable
+        effect: NoExecute
+        tolerationSeconds: 0
+
+      imagePullSecrets:
+        - name: efarda-repo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: graylog
+    role: master
+  name: graylog
+  namespace: graylog
+spec:
+  ports:
+  - name: graylog-api
+    port: 9000
+    protocol: TCP
+    targetPort: 9000
+  - name: online-nginx
+    port: 12334
+    protocol: UDP
+    targetPort: 12334
+  - name: online-error
+    port: 12335
+    protocol: UDP
+    targetPort: 12335
+  - name: ppanel
+    port: 12337
+    protocol: UDP
+    targetPort: 12337
+
+
+  selector:
+    component: graylog
+    role: master
+  sessionAffinity: None
+  type: ClusterIP
