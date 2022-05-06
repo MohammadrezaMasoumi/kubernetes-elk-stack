@@ -11,7 +11,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 192.168.112.90
-    path: /mnt/SSD-1TB/graylog/graylog
+    path: /nfs/SSD-1TB/graylog/graylog
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -39,7 +39,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 192.168.112.90
-    path: /mnt/Non-SSD-1TB/graylog/plugin
+    path: /nfs/SSD-1TB/graylog/plugin
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -53,4 +53,3 @@ spec:
     requests:
       storage: 5Gi
   volumeName: graylog-plugin-pv
-

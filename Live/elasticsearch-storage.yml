@@ -5,13 +5,13 @@ metadata:
   namespace: graylog
 spec:
   capacity:
-    storage: 10Gi
+    storage: 100Gi
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 192.168.112.90
-    path: /mnt/SSD-1TB/graylog/elasticsearch/master
+    path: /nfs/SSD-1TB/graylog/elasticsearch/master
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -23,7 +23,7 @@ spec:
   - ReadWriteMany
   resources:
     requests:
-      storage: 10Gi
+      storage: 100Gi
   volumeName: elasticsearch-master-pv
 ---
 apiVersion: v1
@@ -39,7 +39,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 192.168.112.90
-    path: /mnt/SSD-1TB/graylog/elasticsearch/data
+    path: /nfs/SSD-1TB/graylog/elasticsearch/data
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -61,13 +61,13 @@ metadata:
   namespace: graylog
 spec:
   capacity:
-    storage: 10Gi
+    storage: 100Gi
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 192.168.112.90
-    path: /mnt/SSD-1TB/graylog/elasticsearch/client
+    path: /nfs/SSD-1TB/graylog/elasticsearch/client
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -79,5 +79,5 @@ spec:
   - ReadWriteMany
   resources:
     requests:
-      storage: 10Gi
+      storage: 100Gi
   volumeName: elasticsearch-client-pv

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: logstash
-        image: registry.efarda.ir/elasticsearch/logstash:6.8.2
+        image: registry.efarda.ir/elasticsearch/logstash:8.0
         args:
           - --path.config=/usr/share/logstash/pipeline/logstash.conf
         env:

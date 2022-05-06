@@ -11,7 +11,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 192.168.112.90
-    path: /mnt/SSD-1TB/graylog/mongodb/mongodb0
+    path: /nfs/SSD-1TB/graylog/mongodb/mongodb0
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -26,7 +26,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 192.168.112.90
-    path: /mnt/SSD-1TB/graylog/mongodb/mongodb1
+    path: /nfs/SSD-1TB/graylog/mongodb/mongodb1
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -41,4 +41,4 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 192.168.112.90
-    path: /mnt/SSD-1TB/graylog/mongodb/mongodb2
+    path: /nfs/SSD-1TB/graylog/mongodb/mongodb2

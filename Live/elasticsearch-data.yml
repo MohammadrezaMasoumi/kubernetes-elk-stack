@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: elasticsearch-data
-        image: registry.efarda.ir/elasticsearch/elasticsearch:6.8.2
+        image: registry.efarda.ir/elasticsearch:7.0.0
         env:
         - name: bootstrap.memory_lock
           value: "false"
@@ -47,10 +47,10 @@ spec:
         - containerPort: 9300
           name: transport
           protocol: TCP
-        resources:
-          limits:
-            cpu: "3"
-            memory: 16Gi
+          #        resources:
+          #          limits:
+          #            cpu: "3"
+          #            memory: 16Gi
         volumeMounts:
         - name: storage-data
           mountPath: /usr/share/elasticsearch/data
@@ -97,7 +97,7 @@ spec:
         tolerationSeconds: 0
 
       imagePullSecrets:
-        - name: payrad-repo
+        - name: efarda-repo
 ---
 apiVersion: v1
 kind: Service

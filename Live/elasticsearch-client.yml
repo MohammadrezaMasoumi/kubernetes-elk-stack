@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: elasticsearch-ingest
-        image: registry.efarda.ir/elasticsearch/elasticsearch:6.8.2
+        image: registry.efarda.ir/elasticsearch:7.0.0
         env:
         - name: bootstrap.memory_lock
           value: "false"
@@ -47,11 +47,11 @@ spec:
         - containerPort: 9300
           name: transport
           protocol: TCP
-        resources:
-          limits:
-            cpu: "3"
-            memory: 16Gi
-
+          #        resources:
+          #          limits:
+          #            cpu: "3"
+          #            memory: 16Gi
+          #
         volumeMounts:
         - name: storage-client
           mountPath: /usr/share/elasticsearch/data

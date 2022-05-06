@@ -44,7 +44,7 @@ spec:
         tolerationSeconds: 0
 
       imagePullSecrets:
-        - name: payrad-repo
+        - name: efarda-repo
 ---
 apiVersion: v1
 kind: Service

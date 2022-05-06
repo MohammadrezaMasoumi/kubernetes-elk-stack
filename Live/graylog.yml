@@ -34,7 +34,7 @@ spec:
         - name: "GRAYLOG_ROOT_PASSWORD_SHA2"
           value: "e18b20662b20acf4eb863f314af9d048c3bb87da07499fe96ca13aa5e62f3cb4"
         - name: "GRAYLOG_HTTP_EXTERNAL_URI"
-          value: "https://graylog.payrad.org/"
+          value: "https://graylog.efarda.org/"
         - name: "GRAYLOG_ROOT_TIMEZONE"
           value: "Asia/Tehran"
         - name: "TZ"
