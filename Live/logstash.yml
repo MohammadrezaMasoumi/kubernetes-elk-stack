@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: logstash
-        image: registry.efarda.ir/elasticsearch/logstash:8.0
+        image: registry.efarda.ir/logstash:6.8.9
         args:
           - --path.config=/usr/share/logstash/pipeline/logstash.conf
         env:
@@ -63,7 +63,7 @@ spec:
           claimName: logstash-pvc
 
       imagePullSecrets:
-        - name: efarda-registry
+        - name: efarda-repo
 ---
 kind: Service
 apiVersion: v1

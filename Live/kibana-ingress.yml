@@ -10,6 +10,8 @@ metadata:
       more_set_headers 'Strict-Transport-Security "max-age=31536000; includeSubdomains; preload"';
   name: kibana-ingress
   namespace: graylog
+  annotations: 
+    kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
   - host: kibana.efarda.ir

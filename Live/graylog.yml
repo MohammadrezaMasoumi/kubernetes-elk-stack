@@ -44,8 +44,6 @@ spec:
           mountPath: /usr/share/graylog/data/journal
         - name: graylog-plugin
           mountPath: /usr/share/graylog/plugin
-        - name: graylog-pfsense
-          mountPath: /etc/graylog/server
 
       initContainers:
       - name: fix-the-volume-permission
@@ -58,8 +56,6 @@ spec:
             mountPath: /usr/share/graylog/data/journal
           - name: graylog-plugin
             mountPath: /usr/share/graylog/plugin
-          - name: graylog-pfsense
-            mountPath: /etc/graylog/server
 
       volumes:
       - name: storage-graylog
@@ -68,9 +64,6 @@ spec:
       - name: graylog-plugin
         persistentVolumeClaim:
           claimName: graylog-plugin-pvc
-      - name: graylog-pfsense
-        persistentVolumeClaim:
-          claimName: graylog-pfsense-pvc
 
       tolerations:
       - key: node.kubernetes.io/not-ready

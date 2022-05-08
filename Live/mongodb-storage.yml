@@ -3,7 +3,6 @@ kind: PersistentVolume
 metadata:
   name: mongodb0-graylog-pv
 spec:
-  storageClassName: manual
   capacity:
     storage: 10Gi 
   accessModes:
@@ -18,7 +17,6 @@ kind: PersistentVolume
 metadata:
   name: mongodb1-graylog-pv
 spec:
-  storageClassName: manual
   capacity:
     storage: 10Gi
   accessModes:
@@ -33,7 +31,6 @@ kind: PersistentVolume
 metadata:
   name: mongodb2-graylog-pv
 spec:
-  storageClassName: manual
   capacity:
     storage: 10Gi
   accessModes:

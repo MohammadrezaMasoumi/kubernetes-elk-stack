@@ -34,7 +34,7 @@ spec:
         tolerationSeconds: 0
 
       imagePullSecrets:
-        - name: efarda-registry
+        - name: efarda-repo
 ---
 apiVersion: v1
 kind: Service

@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mongodb
+  namespace: graylog
 spec:
   serviceName: mongodb-service
   replicas: 3
@@ -36,13 +37,13 @@ spec:
             - name: storage-mongodb
               mountPath: /data/db
       imagePullSecrets:
-        - name: efarda-registry
+        - name: efarda-repo
 
   volumeClaimTemplates:
   - metadata:
       name: storage-mongodb
+      namespace: graylog
     spec:
-      storageClassName: manual
       accessModes:
         - ReadWriteMany
       resources:
@@ -53,6 +54,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mongodb-service
+  namespace: graylog
   labels:
     name: mongodb
 spec:

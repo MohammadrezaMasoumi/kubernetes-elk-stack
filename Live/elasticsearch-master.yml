@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: elasticsearch-master
-        image: registry.efarda.ir/elasticsearch:7.0.0
+        image: registry.efarda.ir/elasticsearch:6.8.2
         env:
         - name: discovery.zen.ping.unicast.hosts
           value: elasticsearch-data,elasticsearch-master
