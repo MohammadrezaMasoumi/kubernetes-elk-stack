@@ -22,18 +22,22 @@ spec:
     spec:
       containers:
       - name: graylog
-        image: registry.efarda.ir/graylog/graylog:4.0.5-1
+        image: registry.efarda.ir/graylog/graylog:4.2
 
         env:
         - name: "GRAYLOG_ELASTICSEARCH_HOSTS"
           value: "http://elasticsearch-ingest:9200/"
         - name: "GRAYLOG_MONGODB_URI"
-          value: "mongodb://mongodb-0.mongodb-service:27017,mongodb-1.mongodb-service:27017,mongodb-2.mongodb-service.graylog:27017/graylog"
+          value: "mongodb://admin:abc123changeme@mongodb-0.mongodb-service:27017,mongodb-1.mongodb-service:27017,mongodb-2.mongodb-service.graylog:27017/graylog?replicaSet=MainRepSet&authSource=admin"
         - name: "GRAYLOG_PASSWORD_SECRET"
           value: "bgvQilL6Oy09mXTkSVVHE16SammU"
         - name: "GRAYLOG_ROOT_PASSWORD_SHA2"
           value: "e18b20662b20acf4eb863f314af9d048c3bb87da07499fe96ca13aa5e62f3cb4"
-        - name: "GRAYLOG_HTTP_EXTERNAL_URI"
+        - name: "http_enable_cors"
+          value: "true"
+        - name: "http_bind_address"
+          value: "0.0.0.0:9000"
+        - name: "HTTP_EXTERNAL_URI"
           value: "https://graylog.efarda.org/"
         - name: "GRAYLOG_ROOT_TIMEZONE"
           value: "Asia/Tehran"
