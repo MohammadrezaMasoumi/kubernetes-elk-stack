@@ -1,7 +1,7 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: elasticsearch-ingest-jvm
+  name: elasticsearch-master-jvm
   namespace: graylog
 data:
   jvm.options: |
@@ -26,8 +26,8 @@ data:
     # Xms represents the initial size of total heap space
     # Xmx represents the maximum size of total heap space
 
-    -Xms16g
-    -Xmx16g
+    -Xms8g
+    -Xmx8g
 
     ################################################################
     ## Expert settings
@@ -40,9 +40,9 @@ data:
     ################################################################
 
     ## GC configuration
-    -XX:+UseConcMarkSweepGC
-    -XX:CMSInitiatingOccupancyFraction=75
-    -XX:+UseCMSInitiatingOccupancyOnly
+    #-XX:+UseConcMarkSweepGC
+    #-XX:CMSInitiatingOccupancyFraction=75
+    #-XX:+UseCMSInitiatingOccupancyOnly
 
     ## G1GC Configuration
     # NOTE: G1GC is only supported on JDK version 10 or later.

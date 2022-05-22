@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: graylog
-        image: registry.efarda.ir/graylog/graylog:4.2
+        image: registry.efarda.ir/graylog/graylog:4.3
 
         env:
         - name: "GRAYLOG_ELASTICSEARCH_HOSTS"
