@@ -1,0 +1,20 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: elasticsearch-config-master
+  namespace: graylog
+data:
+  elasticsearch.yml: |
+      cluster.name: "graylog"
+      network.host: 0.0.0.0
+      # License
+      xpack.license.self_generated.type: basic
+      # Monitoring
+      xpack.monitoring.collection.enabled: true
+      node.attr.zone: 1
+      node.master: true
+      node.data: false
+      node.ingest: false
+      discovery.seed_hosts: ["elasticsearch-data","elasticsearch-ingest","elasticsaerch-master"]
+      cluster.initial_master_nodes: ["elasticsearch-master"]
+      node.name: elasticsearch-master

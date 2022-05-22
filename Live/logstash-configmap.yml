@@ -9,14 +9,26 @@ data:
     path.config: /usr/share/logstash/pipeline
   logstash.conf: |
     input {
-      beats {
-        port => 9000
-        }
-     }
-    
-    output {
-      elasticsearch {
-         hosts => ["elasticsearch-ingest:9200"]
-         index => "customerclub-%{[@metadata][version]}-%{+YYYY.MM.dd}"
-        }
-    }
+       tcp {
+         type => "gelf"
+         port => 9000
+         #codec => plain {charset=>"US-ASCII"}
+         }
+
+
+            #        gelf {
+            #          port => "9000"
+            #          type => docker
+            #              }
+
+    } 
+ 
+     output {
+             if  "gelf" in [type] {
+             elasticsearch {
+               hosts => ["http://elasticsearch-ingest:9200"]
+               index => "customerclub-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+           }
+            
+         }
+       }

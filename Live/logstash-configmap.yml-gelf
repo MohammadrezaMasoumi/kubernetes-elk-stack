@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-config
+  namespace: graylog
+data:
+  logstash.yml: |
+    http.host: "0.0.0.0"
+    path.config: /usr/share/logstash/pipeline
+  logstash.conf: |
+          #   input {
+          #    tcp {
+          #        port => 9003
+          #        type => "gelf"
+          #        tags => ["test"]
+          #        }
+          #     }
+   input {
+     beats {
+        port = > 9000
+        tags => ["club"]
+     }
+   }
+    
+   #    output {
+   #     if "test" in [tags] {
+   #      elasticsearch {
+   #         hosts => ["elasticsearch-ingest:9200"]
+   #         index => "docker-gelf-shahab-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+   #        }
+   #    }
+   #   }
+   output { 
+     if "club" in [tags] {
+      elasticsearch {
+         hosts => ["elasticsearch-ingest:9200"]
+         index => "club-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+        }
+    }
+    }

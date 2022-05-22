@@ -4,56 +4,88 @@ metadata:
   name: mongodb
   namespace: graylog
 spec:
-  serviceName: mongodb-service
-  replicas: 3
+  serviceName: mongodb
   selector:
     matchLabels:
       role: mongodb
-      environment: prod
+  replicas: 3
   template:
     metadata:
       labels:
         role: mongodb
-        environment: prod
+    
     spec:
+      securityContext:
+        fsGroup: 1001
       containers:
         - name: mongodb
-          image: registry.efarda.ir/mongo:4.2
+          image: registry.efarda.ir/bitnami/mongodb
           imagePullPolicy: IfNotPresent
-          command:
-            - "mongod"
-            - "--bind_ip"
-            - "0.0.0.0"
-            - "--port"
-            - "27017"
-            - "--replSet"
-            - "graylog"
-          ports:
-            - containerPort: 27017
           env:
-            - name: TZ
-              value: 'Asia/Tehran'
+            - name: MONGODB_DISABLE_SYSTEM_LOG
+              value: "false"
+            - name: MONGODB_SYSTEM_LOG_VERBOSITY
+              value: "1"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MONGODB_REPLICA_SET_NAME
+              value: "replicaset"
+            - name: MONGODB_INITIAL_PRIMARY_HOST
+              value: "mongodb-0.mongodb"
+            - name: MONGODB_ADVERTISED_HOSTNAME
+              value: "$(POD_NAME).mongodb"
+            - name: ALLOW_EMPTY_PASSWORD
+              value: "yes"
+          command:
+            - /scripts/script.sh
+          securityContext:
+            runAsUser: 1001
           volumeMounts:
+            - name: config
+              mountPath: /scripts
             - name: storage-mongodb
-              mountPath: /data/db
-      imagePullSecrets:
-        - name: efarda-repo
-
+              mountPath: /bitnami/mongodb
+              
+      volumes:
+        - name: config
+          configMap:
+            name: mongo-config
+            defaultMode: 0755
+            items:
+              - key: script.sh
+                path: script.sh
   volumeClaimTemplates:
-  - metadata:
-      name: storage-mongodb
-      namespace: graylog
-    spec:
-      accessModes:
-        - ReadWriteMany
-      resources:
-        requests:
-          storage: 10Gi
+    - metadata:
+        name: storage-mongodb
+      spec:
+        storageClassName: manual
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 10Gi 
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: mongodb-service
+  namespace: graylog
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+  - name: mongodb
+    port: 27017
+    targetPort: 27017
+  selector:
+    role: mongodb
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
   namespace: graylog
   labels:
     name: mongodb
@@ -61,6 +93,5 @@ spec:
   ports:
   - port: 27017
     targetPort: 27017
-  clusterIP: None
   selector:
     role: mongodb

@@ -17,9 +17,9 @@ spec:
     spec:
       containers:
       - name: logstash
-        image: registry.efarda.ir/logstash:6.8.9
+        image: registry.efarda.ir/logstash:7.17.0
         args:
-          - --path.config=/usr/share/logstash/pipeline/logstash.conf
+          - --path.config=/usr/share/logstash/pipeline
         env:
         - name: DB_PASSWORD
           valueFrom:
@@ -62,6 +62,7 @@ spec:
         persistentVolumeClaim:
           claimName: logstash-pvc
 
+
       imagePullSecrets:
         - name: efarda-repo
 ---
@@ -92,4 +93,20 @@ spec:
     port: 9000
     targetPort: 9000
     nodePort: 30000
+    protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:  
+  name: cms-service
+  namespace: graylog
+spec:
+  selector:    
+    app: logstash
+  type: NodePort
+  ports:  
+  - name: http
+    port: 9003
+    targetPort: 9003
+    nodePort: 30003
     protocol: TCP
