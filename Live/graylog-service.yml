@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cms-service
+  namespace: graylog
+spec:
+  selector:
+    component: graylog
+    role: master
+  type: NodePort
+  ports:
+  - name: http
+    port: 5043
+    targetPort: 5043
+    nodePort: 30000
+    protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: butterfly-service
+  namespace: graylog
+spec:
+  selector:
+    component: graylog
+    role: master
+  type: NodePort
+  ports:
+  - name: http
+    port: 5044
+    targetPort: 5044
+    nodePort: 30002
+    protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authify-service
+  namespace: graylog
+spec:
+  selector:
+    component: graylog
+    role: master
+  type: NodePort
+  ports:
+  - name: http
+    port: 5045
+    targetPort: 5045
+    nodePort: 30003
+    protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+  namespace: graylog
+spec:
+  selector:
+    component: graylog
+    role: master
+  type: NodePort
+  ports:
+  - name: http
+    port: 5046
+    targetPort: 5046
+    nodePort: 30004
+    protocol: TCP
