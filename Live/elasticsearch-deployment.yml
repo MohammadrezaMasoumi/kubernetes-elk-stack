@@ -95,13 +95,24 @@ spec:
         configMap:
           name: elasticsearch-config-master
 
+
       tolerations:
-      - key: node.kubernetes.io/not-ready
+              #      - key: node.kubernetes.io/not-ready
+              #        effect: NoExecute
+              #        tolerationSeconds: 0
+              #      - key: node.kubernetes.io/unreachable
+              #        effect: NoExecute
+              #        tolerationSeconds: 0
+      - key: app
+        effect: NoSchedule
+        operator: Equal 
+        value: elk
+      - key: app
         effect: NoExecute
-        tolerationSeconds: 0
-      - key: node.kubernetes.io/unreachable
-        effect: NoExecute
-        tolerationSeconds: 0
+        operator: Equal 
+        value: elk
+      imagePullSecrets:
+        - name: efarda-repo
 
       imagePullSecrets:
         - name: efarda-repo
@@ -205,12 +216,20 @@ spec:
           #          name: elasticsearch-ingest-jvm
 
       tolerations:
-      - key: node.kubernetes.io/not-ready
+              #      - key: node.kubernetes.io/not-ready
+              #        effect: NoExecute
+              #        tolerationSeconds: 0
+              #      - key: node.kubernetes.io/unreachable
+              #        effect: NoExecute
+              #        tolerationSeconds: 0
+      - key: app
+        effect: NoSchedule
+        operator: Equal 
+        value: elk
+      - key: app
         effect: NoExecute
-        tolerationSeconds: 0
-      - key: node.kubernetes.io/unreachable
-        effect: NoExecute
-        tolerationSeconds: 0
+        operator: Equal 
+        value: elk
 
       imagePullSecrets:
         - name: efarda-repo
@@ -313,12 +332,22 @@ spec:
           #          name: elasticsearch-ingest-jvm
 
       tolerations:
-      - key: node.kubernetes.io/not-ready
+              #      - key: node.kubernetes.io/not-ready
+              #        effect: NoExecute
+              #        tolerationSeconds: 0
+              #      - key: node.kubernetes.io/unreachable
+              #        effect: NoExecute
+              #        tolerationSeconds: 0
+      - key: app
+        effect: NoSchedule
+        operator: Equal 
+        value: elk
+      - key: app
         effect: NoExecute
-        tolerationSeconds: 0
-      - key: node.kubernetes.io/unreachable
-        effect: NoExecute
-        tolerationSeconds: 0
+        operator: Equal 
+        value: elk
+      imagePullSecrets:
+        - name: efarda-repo
 
       imagePullSecrets:
         - name: efarda-repo
