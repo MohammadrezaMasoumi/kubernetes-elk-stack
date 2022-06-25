@@ -13,7 +13,7 @@ spec:
     port: 5043
     targetPort: 5043
     nodePort: 30000
-    protocol: TCP
+    protocol: UDP
 ---
 apiVersion: v1
 kind: Service
@@ -64,7 +64,7 @@ spec:
     port: 5046
     targetPort: 5046
     nodePort: 30004
-    protocol: TCP
+    protocol: UDP
 
 ---
 apiVersion: v1
@@ -83,4 +83,20 @@ spec:
     targetPort: 5047
     nodePort: 30005
     protocol: UDP
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seed-service
+  namespace: graylog
+spec:
+  selector:
+    component: graylog
+    role: master
+  type: NodePort
+  ports:
+  - name: http
+    port: 5048
+    targetPort: 5048
+    nodePort: 30006
+    protocol: UDP

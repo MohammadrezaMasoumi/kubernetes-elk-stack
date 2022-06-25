@@ -1,29 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kibana
+  name: elasticsearch-exporter
   namespace: graylog
   labels:
-    app: kibana
+    app: elasticsearch-exporter
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kibana
+      app: elasticsearch-exporter
   template:
     metadata:
       labels:
-        app: kibana
+        app: elasticsearch-exporter
     spec:
       containers:
-      - name: kibana
-        image: registry.efarda.ir/kibana:7.17.0
-        env:
-          - name: ELASTICSEARCH_HOSTS
-            value: http://elasticsearch-ingest:9200
-          - name: TZ
-            value: 'Asia/Tehran'
-
+      - name: elasticsearch-exporter
+        image: registry.efarda.ir/elasticsearch-exporter:v1.3.0
+        command: 
+          - '--es.uri=http://elasticsearch-data.graylog.svc.cluster.local`'
       tolerations:
               #      - key: node.kubernetes.io/not-ready
               #        effect: NoExecute
@@ -42,18 +38,3 @@ spec:
       imagePullSecrets:
         - name: efarda-repo
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: kibana
-  namespace: graylog
-  labels:
-    app: kibana
-spec:
-  ports:
-  - port: 80
-    protocol: TCP
-    targetPort: 5601
-  selector:
-    app: kibana
