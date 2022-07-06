@@ -139,3 +139,20 @@ spec:
     targetPort: 5051
     nodePort: 30009
     protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eportal-service
+  namespace: graylog
+spec:
+  selector:
+    component: graylog
+    role: master
+  type: NodePort
+  ports:
+  - name: http
+    port: 5052
+    targetPort: 5052
+    nodePort: 30010
+    protocol: TCP
