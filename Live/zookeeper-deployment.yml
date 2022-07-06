@@ -1,124 +1,214 @@
-#apiVersion: policy/v1beta1
-#kind: PodDisruptionBudget
-#metadata:
-#  name: zk-pdb
-#spec:
-#  selector:
-#    matchLabels:
-#      app: zk
-#  maxUnavailable: 1
-#---
-#apiVersion: apps/v1beta1
-#kind: StatefulSet
-#metadata:
-#  name: zk
-#spec:
-#  serviceName: zk-hs
-#  replicas: 3
-#  podManagementPolicy: Parallel
-#  updateStrategy:
-#    type: RollingUpdate
-#  template:
-#    metadata:
-#      labels:
-#        app: zk
-#    spec:
-#      containers:
-#      - name: kubernetes-zookeeper
-#        imagePullPolicy: Always
-#        image: "gcr.io/google_containers/kubernetes-zookeeper:1.0-3.4.10"
-#        resources:
-#          requests:
-#            memory: "4Gi"
-#            cpu: "2"
-#        ports:
-#        - containerPort: 2181
-#          name: client
-#        - containerPort: 2888
-#          name: server
-#        - containerPort: 3888
-#          name: leader-election
-#        command:
-#        - sh
-#        - -c
-#        - "start-zookeeper \
-#          --servers=3 \
-#          --data_dir=/var/lib/zookeeper/data \
-#          --data_log_dir=/var/lib/zookeeper/data/log \
-#          --conf_dir=/opt/zookeeper/conf \
-#          --client_port=2181 \
-#          --election_port=3888 \
-#          --server_port=2888 \
-#          --tick_time=2000 \
-#          --init_limit=10 \
-#          --sync_limit=5 \
-#          --heap=2G \
-#          --max_client_cnxns=60 \
-#          --snap_retain_count=3 \
-#          --purge_interval=12 \
-#          --max_session_timeout=40000 \
-#          --min_session_timeout=4000 \
-#          --log_level=INFO"
-#        readinessProbe:
-#          exec:
-#            command:
-#            - sh
-#            - -c
-#            - "zookeeper-ready 2181"
-#          initialDelaySeconds: 10
-#          timeoutSeconds: 5
-#        livenessProbe:
-#          exec:
-#            command:
-#            - sh
-#            - -c
-#            - "zookeeper-ready 2181"
-#          initialDelaySeconds: 10
-#          timeoutSeconds: 5
-#        volumeMounts:
-#        - name: datadir
-#          mountPath: /var/lib/zookeeper
-#      securityContext:
-#        runAsUser: 1000
-#        fsGroup: 1000
-#  volumeClaimTemplates:
-#  - metadata:
-#      name: datadir
-#      namespce: 
-#    spec:
-#      accessModes: [ "ReadWriteOnce" ]
-#      resources:
-#        requests:
-#          storage: 25Gi
-#---
-#apiVersion: v1
-#kind: Service
-#metadata:
-#  name: zk-hs
-#  namespace: graylog
-#  labels:
-#    app: zk
-#spec:
-#  ports:
-#  - port: 2888
-#    name: server
-#  - port: 3888
-#    name: leader-election
-#  clusterIP: None
-#  selector:
-#    app: zk
-#---
-#apiVersion: v1
-#kind: Service
-#metadata:
-#  name: zk-cs
-#  namespace: graylog
-#  labels:
-#    app: zk
-#spec:
-#  ports:
-#  - port: 2181
-#    name: client
-#  selector:
-#    app: zk
-
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: zookeeper-1
+    env: prod
+  name: zookeeper-1
+  namespace: graylog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper-1
+  template:
+    metadata:
+      labels:
+        app: zookeeper-1
+        env: prod
+    spec:
+      containers:
+      - name: zookeeper-1
+        image: registry.efarda.ir/bitnami/zookeeper:3.8.0
+        ports:
+        - containerPort: 2181
+        env:
+        - name: ALLOW_ANONYMOUS_LOGIN
+          value: "true"
+        - name: ZOO_SERVER_ID
+          value: "1"
+        - name: ZOO_CLIENT_PORT
+          value: "2181"
+        - name: ZOO_SERVERS
+          value: "0.0.0.0:2888:3888,zookeeper-2:2888:3888,zookeeper-3:2888:3888"
+          #        - name: ZOO_SERVERS
+          #          value: "0.0.0.0:2888:3888"
+        - name: ZOO_ADMINSERVER_ENABLED
+          value: "true"
+      imagePullSecrets:
+        - name: efarda-repo
+      tolerations:
+      - key: app
+        effect: NoSchedule
+        operator: Equal 
+        value: elk
+      - key: app
+        effect: NoExecute
+        operator: Equal 
+        value: elk
+          #        resources:
+          #          requests:
+          #            memory: "12Gi"
+          #        limits:
+          #        ephemeral-storage: "4Gi"
+          #          value: true
+          #---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: zookeeper-2
+    env: prod
+  name: zookeeper-2
+  namespace: graylog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper-2
+  template:
+    metadata:
+      labels:
+        app: zookeeper-2
+        env: prod
+    spec:
+      containers:
+      - name: zookeeper-2
+        image: registry.efarda.ir/bitnami/zookeeper:3.8.0
+        ports:
+        - containerPort: 2181
+        env:
+        - name: ALLOW_ANONYMOUS_LOGIN
+          value: "true"
+        - name: ZOO_SERVER_ID
+          value: "2"
+        - name: ZOO_CLIENT_PORT
+          value: "2181"
+        - name: ZOO_SERVERS
+          value: "zookeeper-1:2888:3888,0.0.0.0:2888:3888,zookeeper-3:2888:3888"
+        - name: ZOO_ADMINSERVER_ENABLED
+          value: "true"
+      imagePullSecrets:
+        - name: efarda-repo
+      tolerations:
+      - key: app
+        effect: NoSchedule
+        operator: Equal 
+        value: elk
+      - key: app
+        effect: NoExecute
+        operator: Equal 
+        value: elk
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: zookeeper-3
+    env: prod
+  name: zookeeper-3
+  namespace: graylog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper-3
+  template:
+    metadata:
+      labels:
+        app: zookeeper-3
+        env: prod
+    spec:
+      containers:
+      - name: zookeeper-3
+        image: registry.efarda.ir/bitnami/zookeeper:3.8.0
+        ports:
+        - containerPort: 2181
+        env:
+        - name: ZOO_SERVER_ID
+          value: "3"
+        - name: ZOO_CLIENT_PORT
+          value: "2181"
+        - name: ZOO_SERVERS
+          value: "zookeeper-1:2888:3888,zookeeper-2:2888:3888,0.0.0.0:2888:3888"
+        - name: ZOO_ADMINSERVER_ENABLED
+          value: "true"
+        - name: ALLOW_ANONYMOUS_LOGIN
+          value: "true"
+      imagePullSecrets:
+        - name: efarda-repo
+      tolerations:
+      - key: app
+        effect: NoSchedule
+        operator: Equal 
+        value: elk
+      - key: app
+        effect: NoExecute
+        operator: Equal 
+        value: elk
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper-1
+  labels:
+    app: zookeeper-1
+  namespace: graylog
+spec:
+  type: ClusterIP
+  ports:
+  - name: client
+    port: 2181
+    protocol: TCP
+  - name: follower
+    port: 2888
+    protocol: TCP
+  - name: leader
+    port: 3888
+    protocol: TCP
+  selector:
+    app: zookeeper-1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper-2
+  labels:
+    app: zookeeper-2
+  namespace: graylog
+spec:
+  type: ClusterIP
+  ports:
+  - name: client
+    port: 2181
+    protocol: TCP
+  - name: follower
+    port: 2888
+    protocol: TCP
+  - name: leader
+    port: 3888
+    protocol: TCP
+  selector:
+    app: zookeeper-2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper-3
+  labels:
+    app: zookeeper-3
+  namespace: graylog
+spec:
+  type: ClusterIP
+  ports:
+  - name: client
+    port: 2181
+    protocol: TCP
+  - name: follower
+    port: 2888
+    protocol: TCP
+  - name: leader
+    port: 3888
+    protocol: TCP
+  selector:
+    app: zookeeper-3
