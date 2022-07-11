@@ -155,4 +155,4 @@ spec:
     port: 5052
     targetPort: 5052
     nodePort: 30010
-    protocol: TCP
+    protocol: UDP
