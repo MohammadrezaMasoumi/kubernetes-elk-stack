@@ -139,6 +139,7 @@ spec:
     targetPort: 5051
     nodePort: 30009
     protocol: TCP
+
 ---
 apiVersion: v1
 kind: Service
@@ -156,3 +157,43 @@ spec:
     targetPort: 5052
     nodePort: 30010
     protocol: UDP
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: abrisham-service
+  namespace: graylog
+spec:
+  selector:
+    component: graylog
+    role: master
+  type: NodePort
+  ports:
+  - name: http
+    port: 5053
+    targetPort: 5053
+    nodePort: 30007
+    protocol: TCP
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallet-service
+  namespace: graylog
+spec:
+  selector:
+    component: graylog
+    role: master
+  type: NodePort
+  ports:
+  - name: http
+    port: 5054
+    targetPort: 5054
+    nodePort: 30011
+    protocol: TCP
+
