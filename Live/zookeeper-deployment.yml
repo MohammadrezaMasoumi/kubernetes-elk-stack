@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: zookeeper-1
-        image: registry.efarda.ir/confluentinc/cp-zookeeper:7.0.1
+        image: confluentinc/cp-zookeeper:7.0.1
         ports:
         - containerPort: 2181
         env:
@@ -28,7 +28,7 @@ spec:
         - name: ZOOKEEPER_TICK_TIME
           value: "2000"
       imagePullSecrets:
-        - name: efarda-repo
+        - name: -repo
       tolerations:
       - key: app
         effect: NoSchedule

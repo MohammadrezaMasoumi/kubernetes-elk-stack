@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  namespace: graylog
+spec:
+  serviceName: mongodb-service
+  replicas: 3
+  selector:
+    matchLabels:
+      role: mongodb
+      environment: prod
+  template:
+    metadata:
+      labels:
+        role: mongodb
+        environment: prod
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:4.4.6 
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: STATEFULSET_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MACHINE_MEMORY
+              value: &machineMemory "1024Mi"
+            - name: MONGO_USER
+              value: "admin"
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: mongodb-password
+            - name: TZ
+              value: 'Asia/Tehran'
+          command:
+            - "bash"
+            - "-c"
+            - |
+              numactl --interleave=all mongod --wiredTigerCacheSizeGB 0.25 --bind_ip 0.0.0.0 \
+              --replSet MainRepSet --auth --clusterAuthMode keyFile \
+              --keyFile /etc/secrets-volume/mongosecret \
+              --setParameter authenticationMechanisms=SCRAM-SHA-1 \
+              --fork --logpath /var/log/mongod.log \
+              &&
+              if [ $STATEFULSET_NAME == "mongodb-0" ];
+              then
+                initiated=0
+                replica_exists=false
+                while [ "$replica_exists" != true ]
+                do
+                  # Need to check to make sure that the other pods are currently up
+                  initiated=`mongo --quiet --eval 'rs.initiate({_id: "MainRepSet", version: 1, members: [
+                         { _id: 0, host : "mongodb-0.mongodb-service.mongodb-stg.svc.cluster.local:27017" },
+                         { _id: 1, host : "mongodb-1.mongodb-service.mongodb-stg.svc.cluster.local:27017" },
+                         { _id: 2, host : "mongodb-2.mongodb-service.mongodb-stg.svc.cluster.local:27017" }
+                   ]})["ok"]'`;
+                  replica_exists=`mongo --quiet --eval 'db.isMaster()["ismaster"]'`;
+                   # Shit we need to check rs status i think instead
+                  echo "Replica exists: " $replica_exists;
+                  sleep 2
+                done
+                # If everything else is workign then we need to create an admin user
+                mongo --eval "db.getSiblingDB('admin').createUser({
+                      user : \"$MONGO_USER\",
+                      pwd  : \"$MONGO_PASSWORD\",
+                      roles: [ { role: 'root', db: 'admin' } ]
+                });"
+                echo "STATEFULSET_NAME: $STATEFULSET_NAME \n MACHINE_MEMORY: $MACHINE_MEMORY";
+              fi && tail -f /var/log/mongod.log
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: secrets-volume
+              mountPath: /etc/secrets-volume/mongosecret
+              subPath: mongosecret
+            - name: storage-mongodb
+              mountPath: /data/db
+
+      volumes:
+        - name: secrets-volume
+          secret:
+            secretName: mongosecret
+            defaultMode: 256
+
+      imagePullSecrets:
+        - name: -repo
+
+  volumeClaimTemplates:
+  - metadata:
+      name: storage-mongodb
+    spec:
+      storageClassName: manual
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: 10Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+  labels:
+    name: mongodb
+spec:
+  ports:
+  - port: 27017
+    targetPort: 27017
+  clusterIP: None
+  selector:
+    role: mongodb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  labels:
+    name: mongodb
+spec:
+  ports:
+  - port: 27017
+    targetPort: 27017
+  selector:
+    role: mongodb

@@ -161,10 +161,12 @@ spec:
     spec:
       containers:
       - name: kafka-1
-        image: registry.efarda.ir/confluentinc/cp-kafka:7.0.1
+        image: confluentinc/cp-kafka:7.0.1
         ports:
         - containerPort: 9092
         env:
+        - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+          value: "false"
         - name: KAFKA_BROKER_ID
           value: "1"
         - name: KAFKA_ZOOKEEPER_CONNECT
@@ -172,7 +174,7 @@ spec:
         - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
           value: "PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT"
         - name: KAFKA_ADVERTISED_LISTENERS
-          value: "PLAINTEXT://192.168.112.87:30100,PLAINTEXT_INTERNAL://kafka-advertise-1:29092"
+          value: "PLAINTEXT://yourworkernodeip:30100,PLAINTEXT_INTERNAL://kafka-advertise-1:29092"
         - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
           value: "1"
         - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
@@ -183,7 +185,7 @@ spec:
         - name: kafka1-data
           mountPath: /var/lib/kafka/data
       imagePullSecrets:
-        - name: efarda-repo
+        - name: -repo
       tolerations:
       - key: app
         effect: NoSchedule
@@ -201,12 +203,12 @@ spec:
           #          value: true
       initContainers:
       - name: init-sysctl
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sysctl', '-w', 'vm.max_map_count=262144']
         securityContext:
           privileged: true
       - name: fix-the-volume-permission
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sh', '-c', 'chmod 777 /var/lib/kafka/data']
         securityContext:
           privileged: true
@@ -214,7 +216,7 @@ spec:
           - name: kafka1-data
             mountPath: /var/lib/kafka/data
       - name: increase-the-ulimit
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sh', '-c', 'ulimit -n 65536']
         securityContext:
           privileged: true
@@ -244,10 +246,12 @@ spec:
     spec:
       containers:
       - name: kafka-2
-        image: registry.efarda.ir/confluentinc/cp-kafka:7.0.1
+        image: /confluentinc/cp-kafka:7.0.1
         ports:
         - containerPort: 9092
         env:
+        - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+          value: "false"
         - name: KAFKA_BROKER_ID
           value: "2"
         - name: KAFKA_ZOOKEEPER_CONNECT
@@ -255,7 +259,7 @@ spec:
         - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
           value: "PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT"
         - name: KAFKA_ADVERTISED_LISTENERS
-          value: "PLAINTEXT://192.168.112.88:30101,PLAINTEXT_INTERNAL://kafka-advertise-2:29091"
+          value: "PLAINTEXT://youworkernodeip:30101,PLAINTEXT_INTERNAL://kafka-advertise-2:29091"
         - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
           value: "1"
         - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
@@ -267,7 +271,7 @@ spec:
           mountPath: /var/lib/kafka/data
                
       imagePullSecrets:
-        - name: efarda-repo
+        - name: -repo
       tolerations:
       - key: app
         effect: NoSchedule
@@ -285,12 +289,12 @@ spec:
           #          value: true
       initContainers:
       - name: init-sysctl
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sysctl', '-w', 'vm.max_map_count=262144']
         securityContext:
           privileged: true
       - name: fix-the-volume-permission
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sh', '-c', 'chmod 777 /var/lib/kafka/data']
         securityContext:
           privileged: true
@@ -298,7 +302,7 @@ spec:
           - name: kafka2-data
             mountPath: /var/lib/kafka/data
       - name: increase-the-ulimit
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sh', '-c', 'ulimit -n 65536']
         securityContext:
           privileged: true
@@ -328,10 +332,12 @@ spec:
     spec:
       containers:
       - name: kafka-3
-        image: registry.efarda.ir/confluentinc/cp-kafka:7.0.1
+        image: /confluentinc/cp-kafka:7.0.1
         ports:
         - containerPort: 9092
         env:
+        - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+          value: "false"
         - name: KAFKA_BROKER_ID
           value: "3"
         - name: KAFKA_ZOOKEEPER_CONNECT
@@ -339,7 +345,7 @@ spec:
         - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
           value: "PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT"
         - name: KAFKA_ADVERTISED_LISTENERS
-          value: "PLAINTEXT://192.168.112.89:30103,PLAINTEXT_INTERNAL://kafka-advertise-3:29093"
+          value: "PLAINTEXT://yourworkernodeip:30103,PLAINTEXT_INTERNAL://kafka-advertise-3:29093"
         - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
           value: "1"
         - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
@@ -351,7 +357,7 @@ spec:
           mountPath: /var/lib/kafka/data
                
       imagePullSecrets:
-        - name: efarda-repo
+        - name: -repo
       tolerations:
       - key: app
         effect: NoSchedule
@@ -369,12 +375,12 @@ spec:
           #          value: true
       initContainers:
       - name: init-sysctl
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sysctl', '-w', 'vm.max_map_count=262144']
         securityContext:
           privileged: true
       - name: fix-the-volume-permission
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sh', '-c', 'chmod 777 /var/lib/kafka/data']
         securityContext:
           privileged: true
@@ -382,7 +388,7 @@ spec:
           - name: kafka3-data
             mountPath: /var/lib/kafka/data
       - name: increase-the-ulimit
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sh', '-c', 'ulimit -n 65536']
         securityContext:
           privileged: true

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: elasticsearch-exporter
-        image: registry.efarda.ir/elasticsearch-exporter:v1.3.0
+        image: /elasticsearch-exporter:v1.3.0
         command: 
           - '--es.uri=http://elasticsearch-data.graylog.svc.cluster.local`'
       tolerations:
@@ -36,5 +36,5 @@ spec:
         operator: Equal 
         value: elk
       imagePullSecrets:
-        - name: efarda-repo
+        - name: -repo
 

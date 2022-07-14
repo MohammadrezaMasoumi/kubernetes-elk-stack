@@ -63,7 +63,7 @@ data:
 
     ## optimizations
 
-    # pre-touch memory pages used by the JVM during initialization
+    # pre-touch memory pages uapp by the JVM during initialization
     -XX:+AlwaysPreTouch
 
     ## basic

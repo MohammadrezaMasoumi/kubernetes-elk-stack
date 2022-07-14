@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+4apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: logstash
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: logstash
-        image: registry.efarda.ir/logstash:7.17.0
+        image: /logstash:7.17.0
         args:
           - --path.config=/usr/share/logstash/pipeline
         env:
@@ -64,7 +64,7 @@ spec:
 
 
       imagePullSecrets:
-        - name: efarda-repo
+        - name: -repo
 ---
 kind: Service
 apiVersion: v1
@@ -78,35 +78,3 @@ spec:
   - protocol: TCP
     port: 5044
     targetPort: 5044
----
-apiVersion: v1
-kind: Service
-metadata:  
-  name: club-service
-  namespace: graylog
-spec:
-  selector:    
-    app: logstash
-  type: NodePort
-  ports:  
-  - name: http
-    port: 9000
-    targetPort: 9000
-    nodePort: 30000
-    protocol: TCP
----
-apiVersion: v1
-kind: Service
-metadata:  
-  name: cms-service
-  namespace: graylog
-spec:
-  selector:    
-    app: logstash
-  type: NodePort
-  ports:  
-  - name: http
-    port: 9003
-    targetPort: 9003
-    nodePort: 30003
-    protocol: TCP

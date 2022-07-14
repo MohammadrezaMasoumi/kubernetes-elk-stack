@@ -10,7 +10,7 @@ spec:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   nfs:
-    server: 192.168.112.90
+    server: 
     path: /nfs/SSD-1TB/graylog/logstash
 ---
 apiVersion: v1

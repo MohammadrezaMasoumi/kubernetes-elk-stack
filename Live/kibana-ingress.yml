@@ -14,7 +14,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-  - host: kibana.efarda.ir
+  - host: kibana..ir
     http:
       paths:
       - backend:
@@ -22,4 +22,4 @@ spec:
           servicePort: 80
   tls:
   - hosts:
-    - kibana.efarda.ir
+    - kibana..ir

@@ -12,7 +12,7 @@ metadata:
   namespace: graylog
 spec:
   rules:
-  - host: graylog.efarda.ir
+  - host: graylog..ir
     http:
       paths:
       - backend:
@@ -20,4 +20,4 @@ spec:
           servicePort: 9000
   tls:
   - hosts:
-    - graylog.efarda.ir
+    - graylog..ir

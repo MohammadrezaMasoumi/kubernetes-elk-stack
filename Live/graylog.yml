@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: graylog
-        image: registry.efarda.ir/graylog/graylog:4.3
+        image: graylog/graylog:4.3
 
         env:
         - name: "GRAYLOG_ELASTICSEARCH_HOSTS"
@@ -30,15 +30,15 @@ spec:
         - name: "GRAYLOG_MONGODB_URI"
           value: "mongodb://admin:abc123changeme@mongodb-0.mongodb-service:27017,mongodb-1.mongodb-service:27017,mongodb-2.mongodb-service.graylog:27017/graylog?replicaSet=MainRepSet&authSource=admin"
         - name: "GRAYLOG_PASSWORD_SECRET"
-          value: "bgvQilL6Oy09mXTkSVVHE16SammU"
+          value: ""
         - name: "GRAYLOG_ROOT_PASSWORD_SHA2"
-          value: "e18b20662b20acf4eb863f314af9d048c3bb87da07499fe96ca13aa5e62f3cb4"
+          value: ""
         - name: "http_enable_cors"
           value: "true"
         - name: "http_bind_address"
           value: "0.0.0.0:9000"
         - name: "HTTP_EXTERNAL_URI"
-          value: "https://graylog.efarda.org/"
+          value: "https://graylog..org/"
         - name: "GRAYLOG_ROOT_TIMEZONE"
           value: "Asia/Tehran"
         - name: "TZ"
@@ -51,7 +51,7 @@ spec:
 
       initContainers:
       - name: fix-the-volume-permission
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sh', '-c', 'chown -R 1100:1100 /usr/share/graylog/data/journal && chown -R 1100:1100 /usr/share/graylog/plugin']
         securityContext:
           privileged: true
@@ -85,7 +85,7 @@ spec:
         operator: Equal 
         value: elk
       imagePullSecrets:
-        - name: efarda-repo
+        - name: -repo
 ---
 apiVersion: v1
 kind: Service

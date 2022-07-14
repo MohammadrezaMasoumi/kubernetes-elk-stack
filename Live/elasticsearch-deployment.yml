@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: elasticsearch-master
-        image: registry.efarda.ir/elasticsearch:7.17.0
+        image: elasticsearch:7.17.0
         env:
                 #        - name: discovery.seed_hosts
                 #          value: elasticsearch-ingest,elasticsearch-data,elasticsaerch-master
@@ -67,13 +67,13 @@ spec:
 
       initContainers:
       - name: init-sysctl
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sysctl', '-w', 'vm.max_map_count=262144']
         securityContext:
           privileged: true
 
       - name: fix-the-volume-permission
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
         securityContext:
           privileged: true
@@ -82,7 +82,7 @@ spec:
             mountPath: /usr/share/elasticsearch/data
 
       - name: increase-the-ulimit
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sh', '-c', 'ulimit -n 65536']
         securityContext:
           privileged: true
@@ -112,10 +112,10 @@ spec:
         operator: Equal 
         value: elk
       imagePullSecrets:
-        - name: efarda-repo
+        - name: -repo
 
       imagePullSecrets:
-        - name: efarda-repo
+        - name: -repo
 ---
 
 apiVersion: apps/v1
@@ -139,7 +139,7 @@ spec:
     spec:
       containers:
       - name: elasticsearch-ingest
-        image: registry.efarda.ir/elasticsearch:7.17.0
+        image: elasticsearch:7.17.0
         env:
                 #        - name: discovery.seed_hosts
                 #          value: elasticsearch-ingest,elasticsearch-data,elasticsaerch-master
@@ -184,13 +184,13 @@ spec:
 
       initContainers:
       - name: init-sysctl
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sysctl', '-w', 'vm.max_map_count=262144']
         securityContext:
           privileged: true
 
       - name: fix-the-volume-permission
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
         securityContext:
           privileged: true
@@ -199,7 +199,7 @@ spec:
             mountPath: /usr/share/elasticsearch/data
 
       - name: increase-the-ulimit
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sh', '-c', 'ulimit -n 65536']
         securityContext:
           privileged: true
@@ -232,7 +232,7 @@ spec:
         value: elk
 
       imagePullSecrets:
-        - name: efarda-repo
+        - name: -repo
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -255,7 +255,7 @@ spec:
     spec:
       containers:
       - name: elasticsearch-data
-        image: registry.efarda.ir/elasticsearch:7.17.0
+        image: elasticsearch:7.17.0
         env:
                 #        - name: discovery.seed_hosts
                 #          value: elasticsearch-master,elasticsearch-data
@@ -300,13 +300,13 @@ spec:
 
       initContainers:
       - name: init-sysctl
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sysctl', '-w', 'vm.max_map_count=262144']
         securityContext:
           privileged: true
 
       - name: fix-the-volume-permission
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
         securityContext:
           privileged: true
@@ -315,7 +315,7 @@ spec:
             mountPath: /usr/share/elasticsearch/data
 
       - name: increase-the-ulimit
-        image: registry.efarda.ir/busybox
+        image: /busybox
         command: ['sh', '-c', 'ulimit -n 65536']
         securityContext:
           privileged: true
@@ -347,10 +347,10 @@ spec:
         operator: Equal 
         value: elk
       imagePullSecrets:
-        - name: efarda-repo
+        - name: -repo
 
       imagePullSecrets:
-        - name: efarda-repo
+        - name: -repo
 ---
 apiVersion: v1
 kind: Service

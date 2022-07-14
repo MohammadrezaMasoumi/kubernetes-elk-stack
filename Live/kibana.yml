@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: kibana
-        image: registry.efarda.ir/kibana:7.17.0
+        image: kibana:7.17.0
         env:
           - name: ELASTICSEARCH_HOSTS
             value: http://elasticsearch-ingest:9200
@@ -40,7 +40,7 @@ spec:
         operator: Equal 
         value: elk
       imagePullSecrets:
-        - name: efarda-repo
+        - name: -repo
 
 ---
 apiVersion: v1
