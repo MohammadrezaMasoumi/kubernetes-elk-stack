@@ -19,22 +19,14 @@ spec:
     spec:
       containers:
       - name: zookeeper-1
-        image: registry.efarda.ir/bitnami/zookeeper:3.8.0
+        image: registry.efarda.ir/confluentinc/cp-zookeeper:7.0.1
         ports:
         - containerPort: 2181
         env:
-        - name: ALLOW_ANONYMOUS_LOGIN
-          value: "true"
-        - name: ZOO_SERVER_ID
-          value: "1"
-        - name: ZOO_CLIENT_PORT
+        - name: ZOOKEEPER_CLIENT_PORT 
           value: "2181"
-        - name: ZOO_SERVERS
-          value: "0.0.0.0:2888:3888,zookeeper-2:2888:3888,zookeeper-3:2888:3888"
-          #        - name: ZOO_SERVERS
-          #          value: "0.0.0.0:2888:3888"
-        - name: ZOO_ADMINSERVER_ENABLED
-          value: "true"
+        - name: ZOOKEEPER_TICK_TIME
+          value: "2000"
       imagePullSecrets:
         - name: efarda-repo
       tolerations:
@@ -52,100 +44,6 @@ spec:
           #        limits:
           #        ephemeral-storage: "4Gi"
           #          value: true
-          #---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app: zookeeper-2
-    env: prod
-  name: zookeeper-2
-  namespace: graylog
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: zookeeper-2
-  template:
-    metadata:
-      labels:
-        app: zookeeper-2
-        env: prod
-    spec:
-      containers:
-      - name: zookeeper-2
-        image: registry.efarda.ir/bitnami/zookeeper:3.8.0
-        ports:
-        - containerPort: 2181
-        env:
-        - name: ALLOW_ANONYMOUS_LOGIN
-          value: "true"
-        - name: ZOO_SERVER_ID
-          value: "2"
-        - name: ZOO_CLIENT_PORT
-          value: "2181"
-        - name: ZOO_SERVERS
-          value: "zookeeper-1:2888:3888,0.0.0.0:2888:3888,zookeeper-3:2888:3888"
-        - name: ZOO_ADMINSERVER_ENABLED
-          value: "true"
-      imagePullSecrets:
-        - name: efarda-repo
-      tolerations:
-      - key: app
-        effect: NoSchedule
-        operator: Equal 
-        value: elk
-      - key: app
-        effect: NoExecute
-        operator: Equal 
-        value: elk
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app: zookeeper-3
-    env: prod
-  name: zookeeper-3
-  namespace: graylog
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: zookeeper-3
-  template:
-    metadata:
-      labels:
-        app: zookeeper-3
-        env: prod
-    spec:
-      containers:
-      - name: zookeeper-3
-        image: registry.efarda.ir/bitnami/zookeeper:3.8.0
-        ports:
-        - containerPort: 2181
-        env:
-        - name: ZOO_SERVER_ID
-          value: "3"
-        - name: ZOO_CLIENT_PORT
-          value: "2181"
-        - name: ZOO_SERVERS
-          value: "zookeeper-1:2888:3888,zookeeper-2:2888:3888,0.0.0.0:2888:3888"
-        - name: ZOO_ADMINSERVER_ENABLED
-          value: "true"
-        - name: ALLOW_ANONYMOUS_LOGIN
-          value: "true"
-      imagePullSecrets:
-        - name: efarda-repo
-      tolerations:
-      - key: app
-        effect: NoSchedule
-        operator: Equal 
-        value: elk
-      - key: app
-        effect: NoExecute
-        operator: Equal 
-        value: elk
 ---
 apiVersion: v1
 kind: Service
@@ -168,47 +66,3 @@ spec:
     protocol: TCP
   selector:
     app: zookeeper-1
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: zookeeper-2
-  labels:
-    app: zookeeper-2
-  namespace: graylog
-spec:
-  type: ClusterIP
-  ports:
-  - name: client
-    port: 2181
-    protocol: TCP
-  - name: follower
-    port: 2888
-    protocol: TCP
-  - name: leader
-    port: 3888
-    protocol: TCP
-  selector:
-    app: zookeeper-2
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: zookeeper-3
-  labels:
-    app: zookeeper-3
-  namespace: graylog
-spec:
-  type: ClusterIP
-  ports:
-  - name: client
-    port: 2181
-    protocol: TCP
-  - name: follower
-    port: 2888
-    protocol: TCP
-  - name: leader
-    port: 3888
-    protocol: TCP
-  selector:
-    app: zookeeper-3
